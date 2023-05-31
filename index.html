@@ -1,0 +1,124 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
+<title>色当てクイズ -webcolorQ</title>
+</head><body>
+<h1>色当てクイズ webcolorQ</h1>
+
+<main id="main">
+	<div id="score">0 / 0 (0.0%)</div>
+	<div id="q"></div>
+	<div id="ans">
+		<div id="ans0">ans0</div>
+		<div id="ans1">ans1</div>
+		<div id="ans2">ans2</div>
+		<div id="ans3">ans3</div>
+	</div>
+</main>
+
+<script type="module">
+import { rnd } from "https://js.sabae.cc/rnd.js";
+import { shuffle } from "https://js.sabae.cc/shuffle.js";
+import { rgb2hsl } from "https://js.sabae.cc/rgb2hsl.js";
+
+const color = await (await fetch("https://code4fukui.github.io/colors/webcolor.json")).json();
+
+let nq = 0;
+let nok = 0;
+
+const game = function() {
+	shuffle(color);
+	const c = color[rnd(4)];
+	q.style.background = c.color;
+	q.ans = c;
+	q.innerHTML = `<div classrgb>${c.color}</div><div class=hsl>${rgb2hsl(c.color)}</div>`;
+	let flg = false;
+	for (let i = 0; i < 4; i++) {
+		const c2 = color[i];
+		const a = document.getElementById("ans" + i);
+		a.textContent = c2.name;
+		a.ans = c2;
+		a.style.background = "#eee";
+		a.style.textDecoration = "none";
+		a.onclick = function() {
+			this.style.background = this.ans.color;
+			if (q.ans.color == this.ans.color) {
+				nq++;
+				if (!flg) nok++;
+				score.textContent = `${nok} / ${nq} (${(nok / nq * 100).toFixed(1)}%)`;
+				console.log(q.ans);
+				setTimeout(game, 500);
+			} else {
+				this.style.textDecoration = "line-through";
+				flg = true;
+			}
+		};
+	}
+};
+game();
+
+</script>
+<style>
+body {
+	margin: 30px;
+	text-align: center;
+}
+#main {
+	display: inline-block;
+	padding: 20px;
+	margin: 2em 0;
+	border: 2px solid black;
+	background: #eee;
+	min-width: 80vw;
+}
+#q {
+	display: inline-block;
+	border: 1px solid black;
+	background: #fff;
+	x-box-sizing: border-box;
+	width: 195px;
+	height: 50px;
+	margin: 0 10px;
+	color: black;
+	-webkit-text-fill-color: white;
+	-webkit-text-stroke-width: 1px;
+	-webkit-text-stroke-color: black;
+	padding-top: 130px;
+	padding-right: 10px;
+	font-family: monospace;
+	font-weight: bold;
+	font-size: 24px;
+	line-height: 24px;
+	text-align: right;
+}
+#q .hsl {
+	font-size: 16px;
+}
+#ans {
+	display: inline-block;
+	vertical-align: top;
+}
+#ans > div {
+	font-size: 24px;
+	line-height: 24px;
+	margin: 20px 1em;
+	cursor: pointer;
+}
+#score {
+	font-size: 30px;
+	margin-bottom: .5em;
+}
+</style>
+
+
+<hr>
+色当てクイズです。<br>
+ウェブ標準、W3CのCSSの色として定義されている147色から出題され続けます。<br>
+覚えると、ウェブアプリ作成の際に気の聞いた色がさっと使えて便利そうです。<br>
+<br>
+Data: <a href=https://github.com/code4fukui/colors/>webcolor - colors open data</a> - <a href=https://www.w3.org/TR/css-color-3/>CSS Color Module Level 3</a><br>
+BaseApp: <a href="http://fukuno.jig.jp/2012/colorweb">2012年一日一創 colorweb</a><br>
+Lib: rnd, shuffle, rgb2hsl from <a href=https://github.com/code4sabae/js/>code4sabae-js</a><br>
+<a href=https://code4fukui.github.com/webcolorQ/>src on GitHub</a><br>
+
+
+</body>
+</html>
